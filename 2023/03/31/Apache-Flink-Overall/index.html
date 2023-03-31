@@ -20,28 +20,32 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Yucorn&#39;s Blog">
-<meta property="og:url" content="http://example.com/index.html">
+  <meta name="description" content="Introduction流处理系统和批处理系统在传统上通常被认为是两种非常不同类型的应用。它们使用不同的编程模型和 API 进行编程，并由不同的系统执行。下表列举了流处理和批处理的特征以及代表性的数据处理引擎。数据处理类型特征数据处理引擎  批处理  输入是有限的数据集合 数据的收集和处理分阶段进行，数据收集完成后才进行数据处理 数据处理结果在整个分析处理阶段结束才能获取，延迟较高Apache">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Apache Flink Overall">
+<meta property="og:url" content="http://example.com/2023/03/31/Apache-Flink-Overall/index.html">
 <meta property="og:site_name" content="Yucorn&#39;s Blog">
+<meta property="og:description" content="Introduction流处理系统和批处理系统在传统上通常被认为是两种非常不同类型的应用。它们使用不同的编程模型和 API 进行编程，并由不同的系统执行。下表列举了流处理和批处理的特征以及代表性的数据处理引擎。数据处理类型特征数据处理引擎  批处理  输入是有限的数据集合 数据的收集和处理分阶段进行，数据收集完成后才进行数据处理 数据处理结果在整个分析处理阶段结束才能获取，延迟较高Apache">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-31T13:21:21.000Z">
+<meta property="article:modified_time" content="2023-03-31T13:25:04.129Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://example.com/">
+<link rel="canonical" href="http://example.com/2023/03/31/Apache-Flink-Overall/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>Yucorn's Blog</title>
+  <title>Apache Flink Overall | Yucorn's Blog</title>
   
 
 
@@ -139,9 +143,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
@@ -157,10 +162,9 @@
       <meta itemprop="name" content="Yucorn's Blog">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/31/Apache-Flink-Overall/" class="post-title-link" itemprop="url">Apache Flink Overall</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          Apache Flink Overall
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -184,7 +188,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <ol>
+        <ol>
 <li>Introduction<br>流处理系统和批处理系统在传统上通常被认为是两种非常不同类型的应用。它们使用不同的编程模型和 API 进行编程，并由不同的系统执行。下表列举了流处理和批处理的特征以及代表性的数据处理引擎。<br>数据处理类型<br>特征<br>数据处理引擎</li>
 </ol>
 <p>批处理</p>
@@ -281,97 +285,37 @@
 <li>Blocking Operators 只是算子层面的实现，他们会保持阻塞状态直到消费所有的输入数据，程序运行时并不知道算子是否被阻塞了。这些算子能够利用 Flink 提供的管理内存缓冲数据，当输入超过内存界限时会溢出到磁盘<br>5.1 Query Optimization<br>Flink 的批处理优化器建立在并行数据库系统的技术之上，比如 plan equivalence, cost modeling and interesting-property propagation。由于构建 Flink 数据流程序中包含用户定义的函数（UDF），导致算子的运算复杂度难以评估，因此 Flink 的查询优化无法直接应用传统的优化技术。<br>目前，Flink 的运行时支持多种执行策略，包括重新分区和广播数据传输，以及基于排序的分组和哈希链接的实现。Flink 的优化器根据 interesting properties propagation 的概念枚举多个物理执行计划，基于 CBO 的方法在多个执行计划中进行选择。考量的执行成本包括网络、磁盘 I&#x2F;O 和 CPU 的使用成本。为了克服 UDF 引起的基数耗时难以预估准确的问题，Flink 优化器还可以支持通过 hint 的方式执行程序员指定的执行方式。<br>5.2 Memory Management<br>Flink 的内存管理构建在数据库技术的基础上，它通过将数据序列化为内存段，而不是在JVM堆上表示 buffer records。诸如 sort 或 join 算子可以直接在二进制数据上进行操作，从而降低序列化和反序列化的开销。<br>为了处理任意类型的对象，Flink 引入了类型推断和自定义序列化的机制。通过使用二进制数据、堆外存储尝试减少GC带来的开销。<br>5.3 Batch Iterations<br>迭代图分析、并行梯度下降和优化技术过去一直是在整体同步并行模型（Bulk Synchronous Parallel ）和同步并行模型（Stale Synchronous Parallel ）上实现的。Flink 通过实现 iteration-control events 能够在上边任意一种类型的结构上迭代逻辑，比如在 BSP 执行模型中 iteration-control events 标志着迭代计算的 Super Step 步骤开始和结束。另外，Flink 还引入了更多新的优化技术，比如可以利用稀疏的计算的delta iterations概念——目前已经被应用在了Flink’s Graph API上。<br>整体同步并行模型：引入Super Step的概念，每一个Super Step均代表 BSP 模型中一次完整的并行计算过程，整个运算过程包含若干个串行超步，超步包含本地计算过程、运算节点间通讯过程和同步过程。超步中的三个阶段是严格串行的，即所有处理机本地计算结束后统一进行通讯过程，最后执行同步阶段。除此之外，每个运算单元在一个超步内只能传递或接收一次数据。<br>[图片]<br>Reference<br><a target="_blank" rel="noopener" href="https://nightlies.apache.org/flink/flink-docs-release-1.16/zh/docs/concepts/stateful-stream-processing/">https://nightlies.apache.org/flink/flink-docs-release-1.16/zh/docs/concepts/stateful-stream-processing/</a><br><a target="_blank" rel="noopener" href="https://nightlies.apache.org/flink/flink-docs-master/docs/ops/state/checkpoints/">https://nightlies.apache.org/flink/flink-docs-master/docs/ops/state/checkpoints/</a><br><a target="_blank" rel="noopener" href="https://nightlies.apache.org/flink/flink-docs-release-1.16/zh/docs/dev/datastream/fault-tolerance/checkpointing/">https://nightlies.apache.org/flink/flink-docs-release-1.16/zh/docs/dev/datastream/fault-tolerance/checkpointing/</a><br><a target="_blank" rel="noopener" href="https://nightlies.apache.org/flink/flink-docs-master/docs/dev/datastream/operators/windows/">https://nightlies.apache.org/flink/flink-docs-master/docs/dev/datastream/operators/windows/</a><br><a target="_blank" rel="noopener" href="https://nightlies.apache.org/flink/flink-docs-master/docs/dev/table/concepts/time_attributes/">https://nightlies.apache.org/flink/flink-docs-master/docs/dev/table/concepts/time_attributes/</a><br><a target="_blank" rel="noopener" href="https://nightlies.apache.org/flink/flink-docs-master/docs/dev/datastream/event-time/generating_watermarks/">https://nightlies.apache.org/flink/flink-docs-master/docs/dev/datastream/event-time/generating_watermarks/</a><br><a target="_blank" rel="noopener" href="https://nightlies.apache.org/flink/flink-docs-master/docs/dev/dataset/iterations/">https://nightlies.apache.org/flink/flink-docs-master/docs/dev/dataset/iterations/</a><br><a target="_blank" rel="noopener" href="https://nightlies.apache.org/flink/flink-docs-master/docs/dev/dataset/overview/">https://nightlies.apache.org/flink/flink-docs-master/docs/dev/dataset/overview/</a><br><a target="_blank" rel="noopener" href="https://flink.apache.org/2018/02/28/an-overview-of-end-to-end-exactly-once-processing-in-apache-flink-with-apache-kafka-too/">https://flink.apache.org/2018/02/28/an-overview-of-end-to-end-exactly-once-processing-in-apache-flink-with-apache-kafka-too/</a><br>《Flink 内核原理与实现》</li>
 </ul>
 
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/31/hello-world/">
+        
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="John Doe">
-      <meta itemprop="description" content="">
-    </span>
 
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Yucorn's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/31/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2023-03-31 10:29:41" itemprop="dateCreated datePublished" datetime="2023-03-31T10:29:41+08:00">2023-03-31</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-      
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/31/hello-world/" rel="prev" title="Hello World">
+      <i class="fa fa-chevron-left"></i> Hello World
+    </a></div>
+      <div class="post-nav-item"></div>
     </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
       </footer>
+    
   </article>
   
   
-  
-
-
   
 
 
 
           </div>
           
+    <div class="comments" id="gitalk-container"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -519,6 +463,25 @@
 
   
 
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'd8499f1e8e367bb7bf4d',
+      clientSecret: '678910b85aaeed5e68d002c13fafd8a9ad9091e5',
+      repo        : 'yucorn.github.io',
+      owner       : 'yucorn',
+      admin       : ['yucorn'],
+      id          : '303e46bbbe851e29dc5e6859c55d1954',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
 
 </body>
 </html>
