@@ -188,10 +188,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2023-03-31 21:21:21 / 修改时间：21:25:04" itemprop="dateCreated datePublished" datetime="2023-03-31T21:21:21+08:00">2023-03-31</time>
+              <time title="创建时间：2023-03-31 21:21:21" itemprop="dateCreated datePublished" datetime="2023-03-31T21:21:21+08:00">2023-03-31</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-04-01 01:12:08" itemprop="dateModified" datetime="2023-04-01T01:12:08+08:00">2023-04-01</time>
+              </span>
 
           
 
@@ -204,43 +210,49 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <ol>
-<li>Introduction<br>流处理系统和批处理系统在传统上通常被认为是两种非常不同类型的应用。它们使用不同的编程模型和 API 进行编程，并由不同的系统执行。下表列举了流处理和批处理的特征以及代表性的数据处理引擎。<br>数据处理类型<br>特征<br>数据处理引擎</li>
-</ol>
-<p>批处理</p>
+          <h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h1><p>流处理系统和批处理系统在传统上通常被认为是两种非常不同类型的应用。它们使用不同的编程模型和 API 进行编程，并由不同的系统执行。下表列举了流处理和批处理的特征以及代表性的数据处理引擎。</p>
+<table>
+<thead>
+<tr>
+<th>数据处理类型</th>
+<th>特征</th>
+<th>数据处理引擎</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>批处理</td>
+<td>- 输入是有限的数据集合 - 数据的收集和处理分阶段进行，数据收集完成后才进行数据处理- 数据处理结果在整个分析处理阶段结束才能获取，延迟较高</td>
+<td>Apache Hadoop</td>
+</tr>
+<tr>
+<td>流处理</td>
+<td>- 输入是连续不断的数据流- 数据的收集和处理同时进行，输入的数据会被实时处理- 数据处理结果立刻可用，并会随着新数据抵达继续更新，延迟较低</td>
+<td>Apache Storm IBM Infosphere StreamsApache Samza</td>
+</tr>
+</tbody></table>
+<p>批处理系统忽略了数据生产的连续性和实时性，通常会将数据记录分批纳入静态的数据集（比如每小时、每天或每月的数据分块），然后以一种时间无关的方式进行数据处理。然而大量的数据实际上是随着时间不断产生的（比如网络日志、应用日志和传感器），建立连续的数据处理管道能够更好的体现数据的实时趋势。<br>Lambda 架构模式尝试在批处理系统旁边运行流处理系统，实现不同的计算路径：首先借助流处理系统及时获得低延迟、不准确的近似结果，批处理离线路径用于获取后期的精确结果，然后修正流处理系统的计算结果。这种融合的尝试没有解决批处理的高延迟、协调多个系统、合并计算结果等复杂的问题。<br>Apache Flink 在编程模型和执行引擎中都将数据流处理作为实时分析、连续流和批处理的统一模型。结合允许对数据流进行任意重放的消息队列，流处理程序在处理最新消息、在大窗口中定期连续聚合数据和处理历史数据时没有区别。这些不同类型的计算只是在数据流的不同起点开始进行处理，并在计算过程中保持不同形式的状态。<br>同时，Flink 承认现在和将来都仍然需要通过批处理的方式处理静态数据。在实现上 Flink 将批处理作为流处理的一种特殊情况——处理的数据流是有限的，数据记录的顺序和时间并不重要。为了更好的支持批处理，Flink 还实现了定制的 API 来处理静态数据，并且为批处理定制了专门的调度策略。<br>本文的后续章节分别介绍以下内容：</p>
 <ul>
-<li>输入是有限的数据集合</li>
-<li>数据的收集和处理分阶段进行，数据收集完成后才进行数据处理</li>
-<li>数据处理结果在整个分析处理阶段结束才能获取，延迟较高<br>Apache Hadoop</li>
-</ul>
-<p>流处理</p>
-<ul>
-<li>输入是连续不断的数据流</li>
-<li>数据的收集和处理同时进行，输入的数据会被实时处理</li>
-<li>数据处理结果立刻可用，并会随着新数据抵达继续更新，延迟较低<br>Apache Storm<br>IBM Infosphere Streams<br>Apache Samza<br>批处理系统忽略了数据生产的连续性和实时性，通常会将数据记录分批纳入静态的数据集（比如每小时、每天或每月的数据分块），然后以一种时间无关的方式进行数据处理。然而大量的数据实际上是随着时间不断产生的（比如网络日志、应用日志和传感器），建立连续的数据处理管道能够更好的体现数据的实时趋势。<br>Lambda 架构模式尝试在批处理系统旁边运行流处理系统，实现不同的计算路径：首先借助流处理系统及时获得低延迟、不准确的近似结果，批处理离线路径用于获取后期的精确结果，然后修正流处理系统的计算结果。这种融合的尝试没有解决批处理的高延迟、协调多个系统、合并计算结果等复杂的问题。<br>Apache Flink 在编程模型和执行引擎中都将数据流处理作为实时分析、连续流和批处理的统一模型。结合允许对数据流进行任意重放的消息队列，流处理程序在处理最新消息、在大窗口中定期连续聚合数据和处理历史数据时没有区别。这些不同类型的计算只是在数据流的不同起点开始进行处理，并在计算过程中保持不同形式的状态。<br>同时，Flink 承认现在和将来都仍然需要通过批处理的方式处理静态数据。在实现上 Flink 将批处理作为流处理的一种特殊情况——处理的数据流是有限的，数据记录的顺序和时间并不重要。为了更好的支持批处理，Flink 还实现了定制的 API 来处理静态数据，并且为批处理定制了专门的调度策略。<br>本文的后续章节分别介绍以下内容：</li>
 <li>Flink 的软件架构和各个组件的职责（第2节）</li>
 <li>Flink 提出的统一流处理和批处理数据的结构（第3节）</li>
 <li>Flink 如何在数据流之上建立具有灵活窗口机制的成熟的流处理和批处理系统（第4、5节）</li>
 </ul>
-<ol start="2">
-<li>Flink  Architecture<br>Figure 1 展示了 Flink 的软件栈。Flink 的核心是分布式数据流引擎，它负责执行数据流程序。在引擎层之上是两个核心API：用于处理有限数据集的 DataSet API 和用于处理无界的数据流的 DataStream API。在 API 层以上又衍生出特定领域的库和 API，其中 Flink ML 用于机器学习，Gelly用于图处理，Table API 用于类 SQL 的相关操作。<br>Flink 的运行时程序是一个有状态运算符的 DAG，DataSet API 和 DataStream API 都能创建出可由数据流引擎执行的运行时程序。<br>[图片]<br>Figure 2 展示的是在一个完整的 Flink 集群中，各个组件协调处理作业的流程。</li>
-</ol>
+<h1 id="2-Flink-Architecture"><a href="#2-Flink-Architecture" class="headerlink" title="2. Flink  Architecture"></a>2. Flink  Architecture</h1><p>Figure 1 展示了 Flink 的软件栈。Flink 的核心是分布式数据流引擎，它负责执行数据流程序。在引擎层之上是两个核心API：用于处理有限数据集的 DataSet API 和用于处理无界的数据流的 DataStream API。在 API 层以上又衍生出特定领域的库和 API，其中 Flink ML 用于机器学习，Gelly用于图处理，Table API 用于类 SQL 的相关操作。<br>Flink 的运行时程序是一个有状态运算符的 DAG，DataSet API 和 DataStream API 都能创建出可由数据流引擎执行的运行时程序。<br>[图片]<br>Figure 2 展示的是在一个完整的 Flink 集群中，各个组件协调处理作业的流程。</p>
 <ul>
 <li>Flink Client：负责获取程序代码，将其转换成数据流图，将作业提交给 JobManager</li>
 <li>JobManager：负责协调数据流的分布式执行，跟踪每个作业的状态和进度，将作业调度给 TaskManager 执行，并负责协调作业的检查点和错误恢复。在高可用的设置下，JobManager 会将每个检查点的元数据持久化到一个容错存储中，这样备用的 JobManager 可以重建检查点并从哪里恢复数据流的执行</li>
 <li>TaskManager：负责执行一个或多个作业，并且向 JobManager 报告任务的状态。TaskManager 会维护 buffer pools 来缓冲或者物化数据流，通过网络连接在各个算子之间交换数据<br>[图片]</li>
 </ul>
-<ol start="3">
-<li>The Common Fabric: Streaming Dataflows<br>尽管 Flink 支持丰富的上层 API，但所有的 Flink 程序最终都会被编译成通用的表示形式 Dataflow Graphs，这也是Flink 能够融合批处理和流处理的基础。<br>3.1 Dataflow Graphs<br>DataFlow Graph 是一个有向无环图，由以下两个部分组成：</li>
-</ol>
+<h1 id="3-The-Common-Fabric-Streaming-Dataflows"><a href="#3-The-Common-Fabric-Streaming-Dataflows" class="headerlink" title="3. The Common Fabric: Streaming Dataflows"></a>3. The Common Fabric: Streaming Dataflows</h1><p>尽管 Flink 支持丰富的上层 API，但所有的 Flink 程序最终都会被编译成通用的表示形式 Dataflow Graphs，这也是Flink 能够融合批处理和流处理的基础。</p>
+<h2 id="3-1-Dataflow-Graphs"><a href="#3-1-Dataflow-Graphs" class="headerlink" title="3.1 Dataflow Graphs"></a>3.1 Dataflow Graphs</h2><p>DataFlow Graph 是一个有向无环图，由以下两个部分组成：</p>
 <ul>
 <li>DataStream 是数据的载体，数据流以点对点、广播、分区、扇出和合并等多种模式在生产操作和消费操作的算子之间传输数据</li>
 <li>Stateful Operator 是有状态的算子（特殊情况下也有可能是无状态的），负责实现所有的处理逻辑。常见的算子包括 filters、hash joins、stream window functions 等，其中许多算子是众所周知的教科书版本的标准算法实现，而 stream window function 是 Flink 中定义的一种算子，在第4节会详细介绍该算子的实现细节。<br>[图片]<br>如图 Figure 3 所示，Flink 在 DataFlow Graph 的基础上进行了以下抽象和设计。</li>
 <li>数据流能够被拆分成多个分区， 图中的源数据流被拆分成了 SRC1 和 SRC2两个分区，相应的算子同时就被拆分为多个并行化的 subtasks，每个 subtask 负责处理数据流的一个分区</li>
 <li>数据流从源数据 SRC 到目标数据 SNK 之间会通过 Intermediate Data Streams 交换数据，比如 IS1 和 IS2 是 pipelined 执行模式下的数据交换中间结果，IS3 是在 blocking 执行模式下的数据交换中间结果（第3.2节讨论）</li>
 <li>数据流在经过算子运算的过程中会传递不同类型的 Control Event ，控制事件到达时会执行对应的操作进行响应（第3.2节讨论）</li>
-<li>Operator State 对应一个并行的算子实例。比如使用 Kafka Connector 时，每个并行的 Kafka 消费组里保存的 topic partition 和 offsets 作为 Operator State（第4.3节讨论）<br>3.2 Data Exchange through Intermediate Data Streams<br>Flink 的中间数据流是算子之间进行数据交换核心抽象。中间数据流表示的是由一个算子生成的可以被其他算子消费的中间数据的逻辑表示——他们是逻辑上的一种表示，可能不会被持久化到磁盘上。</li>
+<li>Operator State 对应一个并行的算子实例。比如使用 Kafka Connector 时，每个并行的 Kafka 消费组里保存的 topic partition 和 offsets 作为 Operator State（第4.3节讨论）</li>
 </ul>
+<h2 id="3-2-Data-Exchange-through-Intermediate-Data-Streams"><a href="#3-2-Data-Exchange-through-Intermediate-Data-Streams" class="headerlink" title="3.2 Data Exchange through Intermediate Data Streams"></a>3.2 Data Exchange through Intermediate Data Streams</h2><p>Flink 的中间数据流是算子之间进行数据交换核心抽象。中间数据流表示的是由一个算子生成的可以被其他算子消费的中间数据的逻辑表示——他们是逻辑上的一种表示，可能不会被持久化到磁盘上。</p>
 <p>Pipelined and Blocking Data Exchange<br>Pipelined stream 在同时运行的生产者和消费者之间交换数据，这就导致了数据流会从消费者向生产者传递 back pressure，通过中间缓冲池做一些调整来补偿短期的吞吐量波动。Flink 将 pipelined stream 用于连续流程序和批处理流的部分环节。<br>back pressure 是流处理系统中关于处理能力的动态反馈机制。当 DAG 中的某些算子无法按照接收数据记录的速度处理记录时就发发生 back pressure，多余的输入数据会先填充此慢算子的输入缓冲区。一旦输入缓冲区被填满，back pressure 就会传递到上游子任务的输出缓冲区。一旦上游任务的输出缓冲区被填满，上游也被迫减慢其处理的处理速度，依次类推直到源算子。<br>Flink 1.13 及以后，能够直接从Web UI中的作业图观察到 back pressure。<br>[图片]<br>Blocking stream 适用于有界数据流，它在被消费之前会将生产者的所有数据进行缓冲，从而将生产和消费算子分离到不同的阶段。blocking stream 自然需要更多的内存，经常需要溢出到二级存储，并且不传递 back pressure。它们可以用来隔离连续的算子。</p>
 <p>Balancing Latency and Throughput<br>Flink 的数据交换机制是建立在交换 buffer records 的基础上。当数据记录在生产者一侧准备就绪时，会被序列化并分成一个或者多个buffer records，然后转发给下游的消费者。这样的设计使得 Flink 能够通过调整 buffer 的大小来调节吞吐量和延迟——将 buffer 设置为高值来实现高吞吐量，通过将 buffer 设置为低值来实现低延迟。<br>实际上 Flink 的算子在满足以下两个条件之一时就会向下游发送数据。</p>
 <ul>
@@ -251,13 +263,16 @@
 <ul>
 <li>Checkpoint barriers 将流划分为 pre-checkpointing 和 post-checkpointing 阶段来协调检查点（第3.3节讨论）</li>
 <li>Watermark 标志着流分区内事件的进展（第4.2节讨论）</li>
-<li>Iteration barriers 标志着流分区已经到达了步骤的终点（第5.3节讨论）<br>3.3 Fault Tolerance<br>Flink 通过 checkpointing 和 steam replay 来处理故障，提供了可靠的执行环境和 exactly-once 的一致性保证。为了有效提供这些保证，需要数据源是持久的和可重放的（比如消息队列）。在实践中，非持久的数据源可以通过在数据源算子的状态中保持一个 write-ahead 日志来提供重放的能力。<br>Flink 的检查点机制是建立在分布式一致性快照的概念上的。由于数据流可能是无界的，对于一个长期运行的作业来说完全重复计算需要重做所有的计算，显然这是不切实际的。Flink 会定期对算子的状态进行快照，包括每隔一段时间对输入流的当前位置进行检查。<br>引入 checkpoints 以后，故障中恢复只需要将所有算子的状态恢复到最后一次成功的快照中的各自状态，从有快照的最新屏障开始重新启动输入流。这样故障恢复的最大重新计算量必定小于两个结果障碍之间的数据输入量。如下图所示，定期做 checkpoints 以后在故障恢复时 Flink 直接从 checkpoint n 开始重放，不再需要关注更老的数据记录。<br>[图片]<br>对所有并行运行的算子进行一致性快照的核心挑战在于不能停止程序的执行。从本质上来讲，所有算子的快照应该是指计算中的同一逻辑时间，Flink中使用的机制被称为异步障碍物快照（Asynchronous Barrier Snapshotting）。<br>[图片]<br>3.4 Iterative Dataflows<br>Flink 的 Dataflow Graph 模型同样能够支持迭代计算。在数据并行处理系统中对迭代的支持通常是通过为每个迭代提交一个新的作业或者向运行中的DAG添加额外的节点或者反馈边，重复地执行执行函数直到达到某个终止条件。Flink 中的迭代实现是 iteration steps——这些特殊的算子本身包含一个 DAG 执行图，如 Figure 6 所示。在第4.5节和第5.3节会分别介绍流处理系统和批处理系统分别是如何实现迭代计算的。<br>[图片]<br>迭代计算中比较重要的概念包括：<br>Iteration Head：获取数据源或者算子上一次迭代的输出结果<br>Iteration Step：在每次迭代过程中执行，是包含了各种算子的数据流<br>Feedback stream：在每一次迭代中，输出都会反馈到下一次迭代中<br>Iteration Tail：单次迭代的输出结果<br>有多个条件可以指定迭代的终止条件：</li>
+<li>Iteration barriers 标志着流分区已经到达了步骤的终点（第5.3节讨论）</li>
+</ul>
+<h2 id="3-3-Fault-Tolerance"><a href="#3-3-Fault-Tolerance" class="headerlink" title="3.3 Fault Tolerance"></a>3.3 Fault Tolerance</h2><p>Flink 通过 checkpointing 和 steam replay 来处理故障，提供了可靠的执行环境和 exactly-once 的一致性保证。为了有效提供这些保证，需要数据源是持久的和可重放的（比如消息队列）。在实践中，非持久的数据源可以通过在数据源算子的状态中保持一个 write-ahead 日志来提供重放的能力。<br>Flink 的检查点机制是建立在分布式一致性快照的概念上的。由于数据流可能是无界的，对于一个长期运行的作业来说完全重复计算需要重做所有的计算，显然这是不切实际的。Flink 会定期对算子的状态进行快照，包括每隔一段时间对输入流的当前位置进行检查。<br>引入 checkpoints 以后，故障中恢复只需要将所有算子的状态恢复到最后一次成功的快照中的各自状态，从有快照的最新屏障开始重新启动输入流。这样故障恢复的最大重新计算量必定小于两个结果障碍之间的数据输入量。如下图所示，定期做 checkpoints 以后在故障恢复时 Flink 直接从 checkpoint n 开始重放，不再需要关注更老的数据记录。<br>[图片]<br>对所有并行运行的算子进行一致性快照的核心挑战在于不能停止程序的执行。从本质上来讲，所有算子的快照应该是指计算中的同一逻辑时间，Flink中使用的机制被称为异步障碍物快照（Asynchronous Barrier Snapshotting）。<br>[图片]</p>
+<h2 id="3-4-Iterative-Dataflows"><a href="#3-4-Iterative-Dataflows" class="headerlink" title="3.4 Iterative Dataflows"></a>3.4 Iterative Dataflows</h2><p>Flink 的 Dataflow Graph 模型同样能够支持迭代计算。在数据并行处理系统中对迭代的支持通常是通过为每个迭代提交一个新的作业或者向运行中的DAG添加额外的节点或者反馈边，重复地执行执行函数直到达到某个终止条件。Flink 中的迭代实现是 iteration steps——这些特殊的算子本身包含一个 DAG 执行图，如 Figure 6 所示。在第4.5节和第5.3节会分别介绍流处理系统和批处理系统分别是如何实现迭代计算的。<br>[图片]<br>迭代计算中比较重要的概念包括：<br>Iteration Head：获取数据源或者算子上一次迭代的输出结果<br>Iteration Step：在每次迭代过程中执行，是包含了各种算子的数据流<br>Feedback stream：在每一次迭代中，输出都会反馈到下一次迭代中<br>Iteration Tail：单次迭代的输出结果<br>有多个条件可以指定迭代的终止条件：</p>
+<ul>
 <li>最大迭代次数：如果没有任何进一步的条件，迭代计算达到最大迭代次数后停止</li>
 <li>自定义聚合器收敛：允许自定义聚合器和收敛标准，如 sum 聚合器可以定义参与计算的记录数量或者累加等于0的时候退出终止迭代</li>
 </ul>
-<ol start="4">
-<li>Stream Analytics on Top of Dataflows<br>Flink 的 DataStream API 实现了完整的流处理分析框架，包括时间的定义、无序事件的处理、定义窗口、维护和更新用户定义的状态等特性。<br>4.1 The Notion of Time<br>Flink 中定义了多种时间的类型，时间类型的定义和特点参见下表：<br>时间类型<br>具体描述<br>特点<br>Event Time<br>指的是事件发生的时间，一旦确定以后再也不会改变。例如，事件被记录在日志文件中，日志中记录的时间戳就是时间事件</li>
-</ol>
+<h1 id="4-Stream-Analytics-on-Top-of-Dataflows"><a href="#4-Stream-Analytics-on-Top-of-Dataflows" class="headerlink" title="4. Stream Analytics on Top of Dataflows"></a>4. Stream Analytics on Top of Dataflows</h1><p>Flink 的 DataStream API 实现了完整的流处理分析框架，包括时间的定义、无序事件的处理、定义窗口、维护和更新用户定义的状态等特性。</p>
+<h2 id="4-1-The-Notion-of-Time"><a href="#4-1-The-Notion-of-Time" class="headerlink" title="4.1 The Notion of Time"></a>4.1 The Notion of Time</h2><p>Flink 中定义了多种时间的类型，时间类型的定义和特点参见下表：<br>时间类型<br>具体描述<br>特点<br>Event Time<br>指的是事件发生的时间，一旦确定以后再也不会改变。例如，事件被记录在日志文件中，日志中记录的时间戳就是时间事件</p>
 <ul>
 <li>不依赖操作系统的时钟，无论执行多少次可以保证计算结果相同</li>
 <li>计算逻辑稍微复杂，需要从数据记录中提取时间<br>Processing Time<br>指的是事件被计算流引擎处理的时间，以计算节点的本地时间为准。</li>
@@ -298,7 +313,19 @@
 <li>提供 DataSet API 专门处理批处理，并且提供查询优化层将 DataSet 程序转化成高效的可执行程序</li>
 <li>批量计算是与流计算相同的运行时执行的。运行时通过 Blocking Data Exchange 的方式将计算分解为相对独立的几个阶段</li>
 <li>批处理的故障恢复不使用 checkpointing，由于输入流是有界的数据集当出现故障时可以直接从物化的数据流或者最新的流分区进行重放。这样适配会让整个计算过程在出现异常在流重放上消耗更多，但同时会让计算在正常运行时花费更少（不进行周期性的checkpointing）</li>
-<li>Blocking Operators 只是算子层面的实现，他们会保持阻塞状态直到消费所有的输入数据，程序运行时并不知道算子是否被阻塞了。这些算子能够利用 Flink 提供的管理内存缓冲数据，当输入超过内存界限时会溢出到磁盘<br>5.1 Query Optimization<br>Flink 的批处理优化器建立在并行数据库系统的技术之上，比如 plan equivalence, cost modeling and interesting-property propagation。由于构建 Flink 数据流程序中包含用户定义的函数（UDF），导致算子的运算复杂度难以评估，因此 Flink 的查询优化无法直接应用传统的优化技术。<br>目前，Flink 的运行时支持多种执行策略，包括重新分区和广播数据传输，以及基于排序的分组和哈希链接的实现。Flink 的优化器根据 interesting properties propagation 的概念枚举多个物理执行计划，基于 CBO 的方法在多个执行计划中进行选择。考量的执行成本包括网络、磁盘 I&#x2F;O 和 CPU 的使用成本。为了克服 UDF 引起的基数耗时难以预估准确的问题，Flink 优化器还可以支持通过 hint 的方式执行程序员指定的执行方式。<br>5.2 Memory Management<br>Flink 的内存管理构建在数据库技术的基础上，它通过将数据序列化为内存段，而不是在JVM堆上表示 buffer records。诸如 sort 或 join 算子可以直接在二进制数据上进行操作，从而降低序列化和反序列化的开销。<br>为了处理任意类型的对象，Flink 引入了类型推断和自定义序列化的机制。通过使用二进制数据、堆外存储尝试减少GC带来的开销。<br>5.3 Batch Iterations<br>迭代图分析、并行梯度下降和优化技术过去一直是在整体同步并行模型（Bulk Synchronous Parallel ）和同步并行模型（Stale Synchronous Parallel ）上实现的。Flink 通过实现 iteration-control events 能够在上边任意一种类型的结构上迭代逻辑，比如在 BSP 执行模型中 iteration-control events 标志着迭代计算的 Super Step 步骤开始和结束。另外，Flink 还引入了更多新的优化技术，比如可以利用稀疏的计算的delta iterations概念——目前已经被应用在了Flink’s Graph API上。<br>整体同步并行模型：引入Super Step的概念，每一个Super Step均代表 BSP 模型中一次完整的并行计算过程，整个运算过程包含若干个串行超步，超步包含本地计算过程、运算节点间通讯过程和同步过程。超步中的三个阶段是严格串行的，即所有处理机本地计算结束后统一进行通讯过程，最后执行同步阶段。除此之外，每个运算单元在一个超步内只能传递或接收一次数据。<br>[图片]<br>Reference<br><a target="_blank" rel="noopener" href="https://nightlies.apache.org/flink/flink-docs-release-1.16/zh/docs/concepts/stateful-stream-processing/">https://nightlies.apache.org/flink/flink-docs-release-1.16/zh/docs/concepts/stateful-stream-processing/</a><br><a target="_blank" rel="noopener" href="https://nightlies.apache.org/flink/flink-docs-master/docs/ops/state/checkpoints/">https://nightlies.apache.org/flink/flink-docs-master/docs/ops/state/checkpoints/</a><br><a target="_blank" rel="noopener" href="https://nightlies.apache.org/flink/flink-docs-release-1.16/zh/docs/dev/datastream/fault-tolerance/checkpointing/">https://nightlies.apache.org/flink/flink-docs-release-1.16/zh/docs/dev/datastream/fault-tolerance/checkpointing/</a><br><a target="_blank" rel="noopener" href="https://nightlies.apache.org/flink/flink-docs-master/docs/dev/datastream/operators/windows/">https://nightlies.apache.org/flink/flink-docs-master/docs/dev/datastream/operators/windows/</a><br><a target="_blank" rel="noopener" href="https://nightlies.apache.org/flink/flink-docs-master/docs/dev/table/concepts/time_attributes/">https://nightlies.apache.org/flink/flink-docs-master/docs/dev/table/concepts/time_attributes/</a><br><a target="_blank" rel="noopener" href="https://nightlies.apache.org/flink/flink-docs-master/docs/dev/datastream/event-time/generating_watermarks/">https://nightlies.apache.org/flink/flink-docs-master/docs/dev/datastream/event-time/generating_watermarks/</a><br><a target="_blank" rel="noopener" href="https://nightlies.apache.org/flink/flink-docs-master/docs/dev/dataset/iterations/">https://nightlies.apache.org/flink/flink-docs-master/docs/dev/dataset/iterations/</a><br><a target="_blank" rel="noopener" href="https://nightlies.apache.org/flink/flink-docs-master/docs/dev/dataset/overview/">https://nightlies.apache.org/flink/flink-docs-master/docs/dev/dataset/overview/</a><br><a target="_blank" rel="noopener" href="https://flink.apache.org/2018/02/28/an-overview-of-end-to-end-exactly-once-processing-in-apache-flink-with-apache-kafka-too/">https://flink.apache.org/2018/02/28/an-overview-of-end-to-end-exactly-once-processing-in-apache-flink-with-apache-kafka-too/</a><br>《Flink 内核原理与实现》</li>
+<li>Blocking Operators 只是算子层面的实现，他们会保持阻塞状态直到消费所有的输入数据，程序运行时并不知道算子是否被阻塞了。这些算子能够利用 Flink 提供的管理内存缓冲数据，当输入超过内存界限时会溢出到磁盘<br>5.1 Query Optimization<br>Flink 的批处理优化器建立在并行数据库系统的技术之上，比如 plan equivalence, cost modeling and interesting-property propagation。由于构建 Flink 数据流程序中包含用户定义的函数（UDF），导致算子的运算复杂度难以评估，因此 Flink 的查询优化无法直接应用传统的优化技术。<br>目前，Flink 的运行时支持多种执行策略，包括重新分区和广播数据传输，以及基于排序的分组和哈希链接的实现。Flink 的优化器根据 interesting properties propagation 的概念枚举多个物理执行计划，基于 CBO 的方法在多个执行计划中进行选择。考量的执行成本包括网络、磁盘 I&#x2F;O 和 CPU 的使用成本。为了克服 UDF 引起的基数耗时难以预估准确的问题，Flink 优化器还可以支持通过 hint 的方式执行程序员指定的执行方式。<br>5.2 Memory Management<br>Flink 的内存管理构建在数据库技术的基础上，它通过将数据序列化为内存段，而不是在JVM堆上表示 buffer records。诸如 sort 或 join 算子可以直接在二进制数据上进行操作，从而降低序列化和反序列化的开销。<br>为了处理任意类型的对象，Flink 引入了类型推断和自定义序列化的机制。通过使用二进制数据、堆外存储尝试减少GC带来的开销。<br>5.3 Batch Iterations<br>迭代图分析、并行梯度下降和优化技术过去一直是在整体同步并行模型（Bulk Synchronous Parallel ）和同步并行模型（Stale Synchronous Parallel ）上实现的。Flink 通过实现 iteration-control events 能够在上边任意一种类型的结构上迭代逻辑，比如在 BSP 执行模型中 iteration-control events 标志着迭代计算的 Super Step 步骤开始和结束。另外，Flink 还引入了更多新的优化技术，比如可以利用稀疏的计算的delta iterations概念——目前已经被应用在了Flink’s Graph API上。<br>整体同步并行模型：引入Super Step的概念，每一个Super Step均代表 BSP 模型中一次完整的并行计算过程，整个运算过程包含若干个串行超步，超步包含本地计算过程、运算节点间通讯过程和同步过程。超步中的三个阶段是严格串行的，即所有处理机本地计算结束后统一进行通讯过程，最后执行同步阶段。除此之外，每个运算单元在一个超步内只能传递或接收一次数据。<br>[图片]</li>
+</ul>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly9uaWdodGxpZXMuYXBhY2hlLm9yZy9mbGluay9mbGluay1kb2NzLXJlbGVhc2UtMS4xNi96aC9kb2NzL2NvbmNlcHRzL3N0YXRlZnVsLXN0cmVhbS1wcm9jZXNzaW5nLw==">https://nightlies.apache.org/flink/flink-docs-release-1.16/zh/docs/concepts/stateful-stream-processing/<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9uaWdodGxpZXMuYXBhY2hlLm9yZy9mbGluay9mbGluay1kb2NzLW1hc3Rlci9kb2NzL29wcy9zdGF0ZS9jaGVja3BvaW50cy8=">https://nightlies.apache.org/flink/flink-docs-master/docs/ops/state/checkpoints/<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9uaWdodGxpZXMuYXBhY2hlLm9yZy9mbGluay9mbGluay1kb2NzLXJlbGVhc2UtMS4xNi96aC9kb2NzL2Rldi9kYXRhc3RyZWFtL2ZhdWx0LXRvbGVyYW5jZS9jaGVja3BvaW50aW5nLw==">https://nightlies.apache.org/flink/flink-docs-release-1.16/zh/docs/dev/datastream/fault-tolerance/checkpointing/<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9uaWdodGxpZXMuYXBhY2hlLm9yZy9mbGluay9mbGluay1kb2NzLW1hc3Rlci9kb2NzL2Rldi9kYXRhc3RyZWFtL29wZXJhdG9ycy93aW5kb3dzLw==">https://nightlies.apache.org/flink/flink-docs-master/docs/dev/datastream/operators/windows/<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9uaWdodGxpZXMuYXBhY2hlLm9yZy9mbGluay9mbGluay1kb2NzLW1hc3Rlci9kb2NzL2Rldi90YWJsZS9jb25jZXB0cy90aW1lX2F0dHJpYnV0ZXMv">https://nightlies.apache.org/flink/flink-docs-master/docs/dev/table/concepts/time_attributes/<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9uaWdodGxpZXMuYXBhY2hlLm9yZy9mbGluay9mbGluay1kb2NzLW1hc3Rlci9kb2NzL2Rldi9kYXRhc3RyZWFtL2V2ZW50LXRpbWUvZ2VuZXJhdGluZ193YXRlcm1hcmtzLw==">https://nightlies.apache.org/flink/flink-docs-master/docs/dev/datastream/event-time/generating_watermarks/<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9uaWdodGxpZXMuYXBhY2hlLm9yZy9mbGluay9mbGluay1kb2NzLW1hc3Rlci9kb2NzL2Rldi9kYXRhc2V0L2l0ZXJhdGlvbnMv">https://nightlies.apache.org/flink/flink-docs-master/docs/dev/dataset/iterations/<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9uaWdodGxpZXMuYXBhY2hlLm9yZy9mbGluay9mbGluay1kb2NzLW1hc3Rlci9kb2NzL2Rldi9kYXRhc2V0L292ZXJ2aWV3Lw==">https://nightlies.apache.org/flink/flink-docs-master/docs/dev/dataset/overview/<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9mbGluay5hcGFjaGUub3JnLzIwMTgvMDIvMjgvYW4tb3ZlcnZpZXctb2YtZW5kLXRvLWVuZC1leGFjdGx5LW9uY2UtcHJvY2Vzc2luZy1pbi1hcGFjaGUtZmxpbmstd2l0aC1hcGFjaGUta2Fma2EtdG9vLw==">https://flink.apache.org/2018/02/28/an-overview-of-end-to-end-exactly-once-processing-in-apache-flink-with-apache-kafka-too/<i class="fa fa-external-link-alt"></i></span></li>
+<li>《Flink 内核原理与实现》</li>
 </ul>
 
       
@@ -384,6 +411,12 @@
           <span class="site-state-item-count">1</span>
           <span class="site-state-item-name">日志</span>
         </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
 </div>
